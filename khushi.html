@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fibonacci Sequence Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        
+        .fib-sequence {
+            font-size: 18px;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+        
+        .error {
+            color: #e74c3c;
+            margin-top: 10px;
+        }
+        
+        .performance {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fibonacci Sequence Generator</h1>
+        
+        <div class="input-group">
+            <label for="terms">Number of terms:</label>
+            <input type="number" id="terms" min="1" max="50" placeholder="Enter a positive number">
+        </div>
+        
+        <button onclick="generateFibonacci()">Generate Sequence</button>
+        
+        <div id="error" class="error"></div>
+        
+        <div class="result" id="result" style="display: none;">
+            <h3>Fibonacci Sequence:</h3>
+            <div class="fib-sequence" id="sequence"></div>
+            <div class="performance" id="performance"></div>
+        </div>
+    </div>
+
+    <script>
+        // Recursive Fibonacci function (same as your C++ version)
+        function fib(n) {
+            if (n <= 1)
+                return n;
+            return fib(n - 1) + fib(n - 2);
+        }
+        
+        // More efficient iterative version for larger numbers
+        function fibIterative(n) {
+            if (n <= 1) return n;
+            
+            let a = 0, b = 1, temp;
+            for (let i = 2; i <= n; i++) {
+                temp = a + b;
+                a = b;
+                b = temp;
+            }
+            return b;
+        }
+        
+        function generateFibonacci() {
+            const termsInput = document.getElementById('terms');
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+            const sequenceDiv = document.getElementById('sequence');
+            const performanceDiv = document.getElementById('performance');
+            
+            // Clear previous results and errors
+            errorDiv.textContent = '';
+            resultDiv.style.display = 'none';
+            
+            const n = parseInt(termsInput.value);
+            
+            // Validate input
+            if (isNaN(n) || n <= 0) {
+                errorDiv.textContent = 'Please enter a positive number';
+                return;
+            }
+            
+            if (n > 50) {
+                errorDiv.textContent = 'For recursive calculation, please enter a number ≤ 50 for better performance';
+                return;
+            }
+            
+            // Calculate Fibonacci sequence and measure performance
+            const startTime = performance.now();
+            const sequence = [];
+            for (let i = 0; i < n; i++) {
+                sequence.push(fib(i));
+            }
+            const endTime = performance.now();
+            const duration = (endTime - startTime).toFixed(2);
+            
+            // Display results
+            sequenceDiv.textContent = sequence.join(', ');
+            performanceDiv.textContent = `Calculated ${n} terms in ${duration} milliseconds using recursive method`;
+            
+            resultDiv.style.display = 'block';
+            
+            // For larger numbers, show comparison with iterative method
+            if (n > 30) {
+                const iterStart = performance.now();
+                const iterSequence = [];
+                for (let i = 0; i < n; i++) {
+                    iterSequence.push(fibIterative(i));
+                }
+                const iterEnd = performance.now();
+                const iterDuration = (iterEnd - iterStart).toFixed(2);
+                
+                performanceDiv.textContent += ` | Iterative method: ${iterDuration} ms`;
+            }
+        }
+    </script>
+</body>
+</html>
